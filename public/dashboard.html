@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Doctor Dashboard - Medora</title>
+</head>
+<body>
+  <h2>Doctor Dashboard</h2>
+  <button onclick="window.location.href='upload.html'">Upload Data</button>
+  <button onclick="showPatientForm()">View Patient Reports</button>
+  <div id="patientForm" style="display:none;">
+    <h3>View Reports for Patient</h3>
+    <form id="viewForm">
+      <label>Patient ID: <input type="text" name="patientId" required></label>
+      <button type="submit">View Reports</button>
+    </form>
+  </div>
+  <div id="reports"></div>
+  <a href="index.html">Logout</a>
+  <script>
+    function showPatientForm() {
+      document.getElementById('patientForm').style.display = 'block';
+      document.getElementById('reports').innerHTML = '';
+    }
+    document.getElementById('viewForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const patientId = e.target.patientId.value;
+      const res = await fetch('/api/doctor/reports/' + encodeURIComponent(patientId));
+      const data = await res.json();
+      let html = '<h4>Reports for ' + patientId + '</h4>';
+      if (data.length === 0) html += '<p>No reports found.</p>';
+      else {
+        html += '<ul>';
+        data.forEach(r => {
+          html += `<li>
+            <b>Type:</b> ${r.reportType} <br>
+            <b>Content:</b> ${r.reportContent} <br>
+            <b>By:</b> ${r.doctorId} <br>
+            <b>At:</b> ${r.timestamp}
+          </li>`;
+        });
+        html += '</ul>';
+      }
+      document.getElementById('reports').innerHTML = html;
+    };
+  </script>
+</body>
+</html>

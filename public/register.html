@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register - Medora</title>
+</head>
+<body>
+  <h2>Register</h2>
+  <form id="registerForm">
+    <label>Name: <input type="text" name="name" required></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Password: <input type="password" name="password" required></label><br>
+    <label>Role:
+      <select name="role" required>
+        <option value="doctor">Doctor</option>
+        <option value="patient">Patient</option>
+        <option value="chemist">Chemist</option>
+      </select>
+    </label><br>
+    <button type="submit">Register</button>
+  </form>
+  <div id="message"></div>
+  <a href="index.html">Back to Home</a>
+  <script>
+    document.getElementById('registerForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        password: form.password.value,
+        role: form.role.value
+      };
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      const msg = await res.json();
+      document.getElementById('message').innerText = msg.message || msg.error;
+      if (res.ok) form.reset();
+    };
+  </script>
+</body>
+</html>

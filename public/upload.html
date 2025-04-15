@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload Report - Medora</title>
+</head>
+<body>
+  <h2>Upload Patient Report</h2>
+  <form id="uploadForm">
+    <label>Patient ID: <input type="text" name="patientId" required></label><br>
+    <label>Report Type: <input type="text" name="reportType" required></label><br>
+    <label>Report Content:<br>
+      <textarea name="reportContent" required></textarea>
+    </label><br>
+    <button type="submit">Upload</button>
+  </form>
+  <div id="message"></div>
+  <a href="dashboard.html">Back to Dashboard</a>
+  <script>
+    // Get doctorId from sessionStorage
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    document.getElementById('uploadForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = {
+        patientId: form.patientId.value,
+        doctorId: user.id,
+        reportType: form.reportType.value,
+        reportContent: form.reportContent.value
+      };
+      const res = await fetch('/api/doctor/upload', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      const msg = await res.json();
+      document.getElementById('message').innerText = msg.message || msg.error;
+      if (res.ok) form.reset();
+    };
+  </script>
+</body>
+</html>
